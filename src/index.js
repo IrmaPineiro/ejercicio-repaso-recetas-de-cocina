@@ -98,6 +98,15 @@ server.put("/api/recipe/:id", async (req, res) => {
 
 server.delete("/api/recipe/:id", async (req, res) => {
     const connection = await getConnection();
+    const { id } = req.params;
+    const sqlQuery = "DELETE FROM recipes WHERE id = ?";
+    const [result] = await connection.query(sqlQuery, [id]);
+    connection.end();
+
+    res.status(200).json({
+        status: "success",
+        message: "Removed resource"
+    })
 
 
 });
