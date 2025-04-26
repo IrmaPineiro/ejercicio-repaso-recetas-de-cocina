@@ -77,7 +77,30 @@ server.post("/api/recipe", async (req, res) => {
         id: result.insertId,
     });
 
-})
+});
+
+server.put("/api/recipe/:id", async (req, res) => {
+    const connection = await getConnection();
+    const { id } = req.params;
+    const { nameRecipe, ingredients, instructions } = req.body;
+    const sqlQuery = "UPDATE recipes SET name = ?, ingredients = ?, instructions = ? WHERE id = ?";
+    const [result] = await connection.query(sqlQuery, [nameRecipe, ingredients, instructions, id]);
+    console.log(result);
+    connection.end();
+
+    res.status(200).json({
+        success: true,
+        id: result.insertId
+    });
+
+
+});
+
+server.delete("/api/recipe/:id", async (req, res) => {
+    const connection = await getConnection();
+
+
+});
 
 
 //Establecer el puerto de conexión:
