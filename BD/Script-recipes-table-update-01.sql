@@ -27,7 +27,12 @@ SELECT * FROM recipes WHERE id = 2;
 INSERT INTO recipes (name, ingredients, instructions)
 VALUES("tortilla de patatas", "huevo, cebolla", "lorem ipsum");
 
+UPDATE recipes SET ingredients = "huevo, patatas y chorizo" WHERE id = 3;
+UPDATE recipes SET ingredients = "pasta, cherries, atún o pollo y aceitunas negras" WHERE id = 4;
 
+DELETE FROM recipes WHERE id = 3;
+INSERT INTO recipes (name, ingredients, instructions)
+VALUES("tortilla de patatas", "huevo, cebolla", "lorem ipsum");
 
 
 
