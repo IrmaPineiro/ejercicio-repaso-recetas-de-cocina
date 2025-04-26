@@ -1,8 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const mySql = require('mysql2/promise');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-// función para realizar conexión para conectarte con la base de datos MySQL:
+// función para realizar conexión para conectarte con la base de datos MySQL de recetas:
 async function getConnection() {
     const connection = await mySql.createConnection({
         host: 'localhost',
@@ -12,11 +14,24 @@ async function getConnection() {
         port: 3306,
     });
     await connection.connect();
-
-
-
     return connection;
 }
+
+// función para realizar conexión para conectarte con la base de datos MySQL de users:
+async function getUsersConnection() {
+    const connection = await mySql.createConnection({
+        host: 'localhost',
+        database: 'usuarios_db',
+        user: 'root',
+        password: 'irmitate',
+        port: 3306,
+    });
+    await connection.connect();
+    return connection;
+}
+
+
+
 
 
 //Crear el servidor web:
@@ -162,7 +177,25 @@ server.delete("/api/recipe/:id", async (req, res) => {
 });
 
 
+//Endpoint Registro de usuario:
+server.post("/api/register", async (req, res) => {
+    const connection = await getUsersConnection();
+    const { email, name, password } = req.body;
+    console.log(email, name, password);
 
+    const passwordHashed = await bcrypt.hash(password, 10);
+    console.log(passwordHashed);
+
+    const sqlQuery = "INSERT INTO users (email, name, hashed_password) VALUES(?, ?, ?)";
+    const [result] = await connection.query(sqlQuery, [email, name, passwordHashed]);
+    console.log(result);
+    connection.end();
+
+    res.status(201).json({
+        success: true,
+        message: `Register completed. Id user: ${result.insertId}`,
+    });
+})
 
 
 //Establecer el puerto de conexión:
