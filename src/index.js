@@ -4,8 +4,10 @@ const mySql = require('mysql2/promise');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+require("dotenv").config();
 
-//const SECRET_KEY_TOKEN = process.env.SECRET_KEY_TOKEN; //se recomienda guardar en un archivo .env y no en el código fuente.
+
+const SECRET_KEY_TOKEN = "secretToken";
 
 
 
@@ -202,7 +204,6 @@ server.post("/api/register", async (req, res) => {
     });
 });
 
-const SECRET_KEY_TOKEN = "dsiadi5%ffll&fsmffmsldfslkdf"; //se recomienda guardar en un archivo .env y no en el código fuente.
 
 //Endpoint login usuario:
 server.post("/api/login", async (req, res) => {
@@ -252,9 +253,8 @@ server.post("/api/login", async (req, res) => {
 
 
 
-
+const port = process.env.PORT || 3001;
 //Establecer el puerto de conexión:
-const port = 5000;
 server.listen(port, () => {
     console.log(`Server is running http://localhost:${port}`);
 });
