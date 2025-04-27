@@ -14,6 +14,11 @@ CHANGE COLUMN nombre name VARCHAR(100) NOT NULL;
 
 ALTER TABLE usuarios RENAME TO users;
 
+INSERT INTO users (email, name, hashed_password)
+VALUES ("pedro", "pedro@gmail.com", "123456");
+
+SELECT * FROM users WHERE email = "daniela@gmail.com";
+
 
 
 

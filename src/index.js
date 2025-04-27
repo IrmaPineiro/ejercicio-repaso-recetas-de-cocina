@@ -4,6 +4,11 @@ const mySql = require('mysql2/promise');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+
+//const SECRET_KEY_TOKEN = process.env.SECRET_KEY_TOKEN; //se recomienda guardar en un archivo .env y no en el código fuente.
+
+
+
 // función para realizar conexión para conectarte con la base de datos MySQL de recetas:
 async function getConnection() {
     const connection = await mySql.createConnection({
@@ -188,14 +193,64 @@ server.post("/api/register", async (req, res) => {
 
     const sqlQuery = "INSERT INTO users (email, name, hashed_password) VALUES(?, ?, ?)";
     const [result] = await connection.query(sqlQuery, [email, name, passwordHashed]);
-    console.log(result);
+    //console.log(result);
     connection.end();
 
     res.status(201).json({
         success: true,
         message: `Register completed. Id user: ${result.insertId}`,
     });
-})
+});
+
+const SECRET_KEY_TOKEN = "dsiadi5%ffll&fsmffmsldfslkdf"; //se recomienda guardar en un archivo .env y no en el código fuente.
+
+//Endpoint login usuario:
+server.post("/api/login", async (req, res) => {
+    const connection = await getUsersConnection();
+    const { email, password } = req.body;
+    const emailQuery = "SELECT * FROM users WHERE email = ?";
+    const [resultUser] = await connection.query(emailQuery, [email]);
+    console.log(resultUser);
+
+    if (resultUser.length > 0) {
+
+        //comprobar la contraseña:
+        const isSamePassword = await bcrypt.compare(password, resultUser[0].hashed_password);
+        //console.log(isSamePassword);
+
+        if (isSamePassword) {
+            const infoToken = {
+                id: resultUser[0].id,
+                email: resultUser[0].email,
+            }
+            const token = jwt.sign(infoToken, SECRET_KEY_TOKEN, { expiresIn: "1h" });
+            console.log(token);
+            res.status(200).json({
+                success: true,
+                token: token
+            });
+
+        } else {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid password"
+            });
+        }
+
+
+    } else {
+        res.status(401).json({
+            success: false,
+            message: "User not found"
+        });
+    }
+
+    connection.end();
+});
+
+
+
+
 
 
 //Establecer el puerto de conexión:
